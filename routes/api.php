@@ -54,5 +54,6 @@ Route::group(['middleware' => ['jwt', 'jwt.auth']], function () {
 
 });
 
-
-    
+Route::group(['namespace' => 'Review'], function () {
+    Route::get('/review/questions', 'ReviewQuestionController@index');
+});
