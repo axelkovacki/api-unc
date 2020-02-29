@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Review;
 
 use App\Review;
+use App\ReviewAnswer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
@@ -15,19 +17,24 @@ class ReviewController extends Controller
      */
     public function index()
     {
-        $reviews = Review::get();
+        $user = Auth::user();
+
+        $reviews = Review::where('user_id', $user->id)->get();
+
+        foreach($reviews as $review) {
+            $explode = explode(' ', $review->created_at);
+            unset($review->created_at);
+            
+            #Parse date
+            $date = explode('-', $explode[0]);
+            $review->date = $date[2] . '/' . $date[1] . '/' . $date[0];
+
+            #Parse time
+            $time = explode(':', $explode[1]);
+            $review->time = $time[0] . ':' . $time[1];
+        } 
 
         return response()->json(['content' => $reviews]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -38,51 +45,23 @@ class ReviewController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $user = Auth::user();
+        $data = $request->all();
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Review $review)
-    {
-        //
-    }
+        $review = Review::create([
+            'user_id' => $user->id,
+            'latitude' => $data['geolocation']['latitude'],
+            'longitude' => $data['geolocation']['longitude'],
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Review $review)
-    {
-        //
-    }
+        foreach($data['questions'] as $question) {
+            ReviewAnswer::create([
+                'review_id' => $review->id,
+                'review_question_id' => $question['answer']['review_question_id'],
+                'review_question_option_id' => $question['answer']['review_question_option_id']
+            ]);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Review $review)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Review  $review
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Review $review)
-    {
-        //
+        return response()->json(['content' => $review]);
     }
 }
