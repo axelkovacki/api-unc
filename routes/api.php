@@ -52,7 +52,10 @@ Route::group(['middleware' => ['jwt', 'jwt.auth']], function () {
 
     });
 
-});
-
-
     
+    Route::group(['namespace' => 'Review'], function () {
+        Route::get('/review', 'ReviewController@index');
+        Route::post('/review', 'ReviewController@store');
+        Route::get('/review/questions', 'ReviewQuestionController@index');
+    });
+});
