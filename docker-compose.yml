@@ -1,0 +1,40 @@
+version: "2"
+services:
+  unc:
+    build:
+      context: .
+      dockerfile: ./devops/Dockerfile.local
+    ports:
+      - 80:8000
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - unc
+    tty: true
+    container_name: unc
+  mysql_unc:
+    image: mariadb:10.3
+    entrypoint: docker-entrypoint.sh --sql-mode='STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
+    ports:
+      - 3306:3306
+    networks:
+      - unc
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=123456
+      - MYSQL_DATABASE=unc
+    container_name: mysql_unc
+  phpmyadmin_unc:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8181:80
+    networks:
+      - unc
+    environment:
+      PMA_HOST: mysql_unc
+    container_name: phpmyadmin_unc
+networks:
+  unc:
+    external:
+      name: unc_network
