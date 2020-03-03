@@ -59,3 +59,7 @@ Route::group(['middleware' => ['jwt', 'jwt.auth']], function () {
         Route::get('/review/questions', 'ReviewQuestionController@index');
     });
 });
+
+Route::group(['namespace' => 'Map'], function () {
+    Route::get('/map/coordinates', 'MapController@coordinates');
+});
