@@ -13,15 +13,11 @@ class UsersTableSeeder extends Seeder
     {
         DB::table('users')->insert([
             [
-                'name'              => 'Admin User',
-                'email'             => 'admin@unc.com.br',
-                'password'          => Hash::make('1234')
-            ],
-            [
-                'name'              => 'User Test',
-                'email'             => 'user@user.com',
-                'password'          => Hash::make('1234')
-            ] 
+                'name'              => 'Áxel Kovacki',
+                'cpf'             => '000.000.000-00',
+                'course'             => 'ENGENHARIA DE SOFTWARE',
+                'password'          => Hash::make('00000000000')
+            ]
         ]);
     }
 }

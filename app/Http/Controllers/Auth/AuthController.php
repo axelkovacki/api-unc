@@ -22,18 +22,18 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('cpf', $request->cpf)->first();
 
         if(!$user) return response()->json(['error' => 'User not found.'], 404);
 
         // Account Validation
         if (!(new BcryptHasher)->check($request->input('password'), $user->password)) {
 
-            return response()->json(['error' => 'Email or password is incorrect. Authentication failed.'], 401);
+            return response()->json(['error' => 'Cpf or password is incorrect. Authentication failed.'], 401);
         }
 
         // Login Attempt
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('cpf', 'password');
 
         try {
 
@@ -55,7 +55,8 @@ class AuthController extends Controller
         $data = [
             'id' => $resource->id,
             'name' => $resource->name,
-            'email' => $resource->email,
+            'cpf' => $resource->cpf,
+            'course' => $resource->course,
             'token' => $token
         ];
 
